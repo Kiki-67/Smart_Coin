@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Search</title>
+    <style>
+        *{
+             margin: 0px;
+             padding: 0px;
+         }
+ 
+         /*清除浮动的影响*/
+         .cl{
+             clear: both;
+         }
+         body{
+             font-size: 14px;
+             font-family: 'Courier New', Courier, monospace;
+         }
+         .header{
+             height: 58px;
+             background-color: #191D3A;
+             
+         }
+         /*版心*/
+         .inner_c{
+             width: 1000px;
+             margin: 0 auto; /*让导航条、内容区域等部分的版心在父亲里居中*/
+         }
+         /*导航条的logo*/
+         .header .logo{
+             padding: 17px 0;
+             position: absolute;
+             left: 40px;
+         }
+         .header .nav{
+             position: absolute;
+ 
+         }
+         .header .nav ul{
+             list-style: none; /*去掉列表前面的圆点*/
+         }
+         .header .nav ul li{
+             float: left;
+             width: 100px;
+             line-height: 58px; /*让行高等于这一行的高度，保证里面的文字垂直居中*/
+             border-left: 1px solid #252947; /*每个li之间有间隔线*/
+         }
+         .header .nav ul li.last{
+             border-right: 1px solid #252947;/*最后一个li的右边加间隔线*/
+         }
+         .header .nav ul li a{
+             display: block; /*将超链接转为块儿，可以保证其霸占父亲的整行*/
+             height: 58px;
+             text-decoration: none; /*去掉超链的下划线*/
+             color:#818496;
+             text-align: center;  /*让这个div内部的文本居中*/
+         }
+         .header .nav ul li a.current{
+             color:white;
+             background: #252947;
+         }
+         .header .nav ul li a:hover{
+             color: white;
+             background: #252947;
+         }
+ 
+         .header .jrwm_box{
+             float: left;
+             height: 58px;
+             width: 100px;
+             padding-left: 48px;
+             padding-top: 12px;
+             position: absolute;
+             right: 40px;
+ 
+         }
+         /*放背景图片的div*/
+         .header .jrwm_box .jrwm{
+             height: 34px;
+             background-image: url("/static/records/green.png");
+             background-repeat: no-repeat;
+             text-align: center; /*让这个div内部的超链接居中*/
+         }
+         .header .jrwm_box .jrwm a{
+             display: block; /*将超链接转为块儿，可以保证其霸占父亲的整行*/
+             line-height: 34px; /*让行高为背景图片的高度，可以保证超链接的文字在背景图片里垂直居中*/
+             text-decoration: none; /*去掉超链的下划线*/
+             color: white;
+         }
+        .change {
+            max-width: 500px;
+            width: 100%;
+            margin: 32px auto 0;
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: white;
+        }
+    </style>    
+</head>
+<body>
+    <div class="header">
+        <div class="inner_c">
+            <div class="logo">
+                <p style="vertical-align: middle; color: white; font-family: fantasy; font-size: 24px;">Smart Coin</p>
+            </div>
+            <div class="nav">
+                <ul>
+                    <li><a href="{% url 'records:home' user.id %}" class="current">User Home</a></li>
+                    <li><a href="{% url 'records:home' user.id %}">Bill</a></li>
+                    <li ><a href="{% url 'records:summary' user.id %}">Summary</a></li>
+                    <li class="last"><a href="{% url 'records:edit' user.id %}">Profile</a></li>
+            </div>
+            <div class="jrwm_box">
+                <div class="jrwm">
+                    <a href="{% url 'records:user_logout' %}" role="button">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+     <!-- 在导航条和banner之间隔一堵墙 -->
+     <div class="cl"></div>
+    <form class="change" action=".">
+        {% csrf_token %}
+        <input type="checkbox" id="expense" name="expense" value="expense">
+        <label for="expense">Expense</label><br>
+        <input type="checkbox" id="income" name="income" value="income">
+        <label for="income">Income</label><br>
+        <input type="checkbox" id="budget" name="budget" value="budget">
+        <label for="budget">Budget</label><br>
+        <p>from:</p> <input type="date" id="date_from" name="date_from"> <br>
+        <p>to:</p> <input type="date" id="date_to" name="date_to"> <br>
+        <input type="submit" value="Submit">
+        <!--search expense-->
+            <table>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Expense Type</th>
+                    <th>Payment Method</th>
+                    <th>currency_type</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for ep in expense_list %}
+                    <tr>
+                        <td>{{ ep.day }}</td>
+                        <td>{{ ep.amount }}</td>
+                        <td>{{ ep.expense_type }}</td>
+                        <td>{{ ep.payment_method }}</td>
+                        <td>{{ ep.currency_type }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        <!--search income-->
+            <table>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>currency_type</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for icm in income %}
+                    <tr>
+                        <td>{{ icm.day }}</td>
+                        <td>{{ icm.amount }}</td>
+                        <td>{{ icm.currency_type }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        <!--search income-->
+            <table>
+                <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Amount</th>
+                    <th>currency_type</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for bdg in budget %}
+                    <tr>
+                        <td>{{ bdg.month_budget }}</td>
+                        <td>{{ bdg.amount }}</td>
+                        <td>{{ bdg.currency_type }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+    </form>
+</body>
+</html>
